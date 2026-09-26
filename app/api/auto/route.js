@@ -133,7 +133,7 @@ router.post('/', async (req, res) => {
     // Step 6: Activate premium
     push('premium', 'mengaktifkan premium...')
     const premium = await auth.pro(v.id)
-    const stats = premium.ok ? incrementStats() : getStats()
+    const stats = premium.ok ? await incrementStats(true) : await getStats()
 
     const now = new Date()
     const until = new Date(now)
