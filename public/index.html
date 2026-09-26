@@ -469,14 +469,11 @@ async function loadStats() {
     const res = await fetch(`/api/stats?t=${Date.now()}`);
     const data = await res.json();
 
-    // 1. Ambil Total Activations (jika tidak ada, ambil fallback total_links)
-    const totalCount = data.totalActivations ?? data.total_links ?? 0;
-    
-    // 2. Ambil statistik HARI INI berdasarkan tanggal ISO
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayCount = (data.daily && data.daily[todayStr]) ? data.daily[todayStr] : 0;
+    // Ambil total dan today dari data JSONBin
+    const totalCount = data.total ?? 0;
+    const todayCount = data.today ?? 0;
 
-    // 3. Masukkan ke ID HTML yang sesuai (st-total dan st-today)
+    // Masukkan ke ID HTML yang sesuai (st-total dan st-today)
     const elTotal = document.getElementById('st-total');
     const elToday = document.getElementById('st-today');
 
