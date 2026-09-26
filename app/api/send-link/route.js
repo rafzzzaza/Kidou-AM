@@ -1,7 +1,6 @@
 const express = require('express')
 const auth = require('../../../lib/auth')
 const { friendlyFirebaseError } = require('../../../lib/errors')
-const { incrementStats } = require('../../../lib/stats')
 
 const router = express.Router()
 
@@ -15,9 +14,6 @@ router.post('/', async (req, res) => {
   if (!r.ok) {
     return res.status(400).json({ success: false, message: friendlyFirebaseError(r.why), code: r.why })
   }
-  
-  // Update stats untuk link terkirim
-  await incrementStats(false)
 
   return res.json({ success: true, email: em, message: `link dikirim ke ${em}. cek inbox / spam.` })
 })
