@@ -1,4 +1,3 @@
-
 <div align="center">
 
   # ⚡ Kidou AM — Premium Activator
@@ -16,6 +15,7 @@
   <p align="center">
     <a href="#-fitur-utama">Fitur Utama</a> •
     <a href="#-dokumentasi-api">Dokumentasi API</a> •
+    <a href="#-panduan-database-jsonbin">Konfigurasi Database</a> •
     <a href="#-cara-instalasi--penggunaan">Panduan Instalasi</a> •
     <a href="#-dukungan--kontribusi">Dukungan</a>
   </p>
@@ -35,11 +35,39 @@ Sistem ini mendukung alur **Aktivasi Manual Step-by-step** yang terintegrasi den
 ## 🚀 Fitur Utama
 
 - 📧 **Mode Manual Step-by-Step**: Alur verifikasi interaktif 3 langkah (*Input Email ➔ Salin Link ➔ Aktivasi Token*).
+- 📊 **Real-time Live Stats**: Hitungan otomatis `Total Activations` & `Activated Today` menggunakan integrasi JSONBin.io.
 - ⚡ **Satu-Klik Auto Mode**: Pembuatan temporary email otomatis ➔ Pengiriman magic link ➔ Pemeriksaan inbox ➔ Verifikasi & Pengaktifan lisensi.
 - 📬 **Integrasi Temp Mail**: Terhubung langsung secara otomatis dengan penyedia email sementara (`tempmail.yandez.my.id`).
 - 🔐 **Secure & Anonymous**: Tidak membutuhkan maupun menyimpan kata sandi pengguna secara permanen.
 - 🎨 **UI Modern & Responsive**: Menggunakan antarmuka gaya *Cyber Glassmorphism* yang ringan dan nyaman digunakan di ponsel maupun komputer.
-- ☁️ **Vercel Ready**: Dilengkapi konfigurasi `vercel.json` untuk kemudahan *one-click deployment*.
+- ☁️ **Vercel Ready**: Dilengkapi konfigurasi `vercel.json` dan bebas dari masalah *file-system crash* di Serverless Node.js.
+
+---
+
+## 🗄️ Panduan Database JSONBin
+
+Aplikasi ini menggunakan **JSONBin.io** sebagai database cloud eksternal permanen untuk menyimpan statistik pemakaian secara *real-time* (bebas dari pembatasan serverless Vercel).
+
+### 1. Buat Bin di JSONBin.io
+1. Daftar atau masuk ke akun [JSONBin.io](https://jsonbin.io/).
+2. Buat **Bin Baru** (*Create Bin*) dan masukkan struktur JSON dasar berikut:
+   ```json
+   {
+     "total_links": 0,
+     "totalActivations": 0,
+     "daily": {}
+   }
+   ```
+3. Simpan Bin tersebut dan salin **Bin ID** (contoh: `66f5a1b2e4b0e3a6789abcde`).
+4. Buka menu **API Keys** di profil akun JSONBin Anda, lalu salin **Master Key** Anda (contoh: `$2a$10$X1yZ...`).
+
+### 2. Atur Environment Variables
+Tambahkan variabel berikut pada berkas `.env` lokal Anda atau di **Settings ➔ Environment Variables** pada dashboard Vercel Anda:
+
+| Variable Name | Nilai Contoh | Keterangan |
+| :--- | :--- | :--- |
+| `JSONBIN_BIN_ID` | `66f5a1b2e4b0e3a...` | ID Bin yang sudah Anda buat di JSONBin |
+| `JSONBIN_API_KEY` | `$2a$10$X1yZ...` | Master Key API dari akun JSONBin Anda |
 
 ---
 
@@ -126,11 +154,25 @@ Content-Type: application/json
 ---
 
 ### 5. Dapatkan Statistik Aktivasi
-Mengambil jumlah total aktivasi yang telah diproses oleh server.
+Mengambil jumlah total aktivasi (`totalActivations`) dan rincian harian (`daily`) yang tercatat di JSONBin.
 
 ```http
 GET /api/stats
 ```
+
+<details>
+<summary><b>🔍 Lihat Contoh Respon Success (200 OK)</b></summary>
+
+```json
+{
+  "total_links": 128,
+  "totalActivations": 95,
+  "daily": {
+    "2026-09-26": 12
+  }
+}
+```
+</details>
 
 ---
 
@@ -150,7 +192,11 @@ cd AM-PREM-GENERATOR
 # 3. Instalasi seluruh dependensi
 npm install
 
-# 4. Jalankan server lokal
+# 4. Buat file .env dan isi dengan credentials JSONBin
+echo "JSONBIN_BIN_ID=your_bin_id" >> .env
+echo "JSONBIN_API_KEY=your_master_key" >> .env
+
+# 5. Jalankan server lokal
 npm start
 # atau
 node server.js
@@ -162,20 +208,14 @@ Buka peramban (browser) Anda dan akses: `http://localhost:3300`
 
 ### 2. Deploy ke Vercel 🌐
 
-Aplikasi ini sudah siap untuk di-deploy ke **Vercel** tanpa konfigurasi tambahan:
+Aplikasi ini sudah dioptimalkan untuk berjalan sempurna di **Vercel**:
 
-1. Instal Vercel CLI (jika belum ada):
-   ```bash
-   npm i -g vercel
-   ```
-2. Lakukan Login ke Akun Vercel Anda:
-   ```bash
-   vercel login
-   ```
-3. Deploy proyek:
-   ```bash
-   vercel
-   ```
+1. Push berkas proyek Anda ke **GitHub**.
+2. Hubungkan repositori GitHub Anda di dashboard **Vercel**.
+3. Buka **Project Settings ➔ Environment Variables** di Vercel, lalu tambahkan:
+   - `JSONBIN_BIN_ID`
+   - `JSONBIN_API_KEY`
+4. Tekan tombol **Deploy**. Aplikasi akan langsung *online* dengan fitur pencatatan statistik real-time!
 
 ---
 
