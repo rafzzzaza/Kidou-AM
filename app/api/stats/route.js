@@ -1,16 +1,13 @@
-const express = require('express');
-const { getStats } = require('../../../lib/stats');
+import { NextResponse } from 'next/server';
+import { getStats } from '@/lib/stats';
 
-const router = express.Router();
+export const dynamic = 'force-dynamic';
 
-router.get('/', (req, res) => {
-  const stats = getStats();
-  res.json({
-    success: true,
-    total: stats.total,
-    today: stats.today,
-    timestamp: new Date().toISOString()
+export async function GET() {
+  const stats = await getStats();
+  return NextResponse.json(stats, {
+    headers: {
+      'Cache-Control': 'no-store, max-age=0'
+    }
   });
-});
-
-module.exports = router;
+}

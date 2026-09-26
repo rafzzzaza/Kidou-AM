@@ -22,7 +22,13 @@ router.post('/', async (req, res) => {
 
   const uid = v.uid || v.user?.localId || '-'
   const premium = await auth.pro(v.id)
-  const stats = premium.ok ? incrementStats() : getStats()
+
+  // LOGIKA PERBAIKAN STATS:
+  // Jika premium aktif -> panggil incrementStats(true) untuk tambah total_links & totalActivations
+  // Jika tidak aktif -> panggil getStats() biasa untuk ambil data statistik terkini
+  const statsData = premium.ok 
+    ? await incrementStats(true) 
+    : await getStats()
 
   const now = new Date()
   const until = new Date()
@@ -32,7 +38,7 @@ router.post('/', async (req, res) => {
     success: true,
     message: premium.ok ? 'verifikasi berhasil, premium aktif.' : 'login berhasil, aktivasi premium gagal.',
     data: {
-      stats: stats,
+      stats: statsData, // Menampilkan data stats paling baru
       uid: v.uid,
       email: v.user?.email || em,
       emailVerified: v.user?.emailVerified ?? true,

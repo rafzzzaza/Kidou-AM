@@ -463,19 +463,33 @@
   <script>
   const $ = i => document.getElementById(i);
 
-  // Fetch Stats & Auto Refresh Function
-  function loadStats() {
-    fetch('/api/stats')
-      .then(r => r.json())
-      .then(j => {
-        $('st-total').textContent = Number(j.total || 0).toLocaleString('id-ID');
-        $('st-today').textContent = Number(j.today || 0).toLocaleString('id-ID');
-      })
-      .catch(() => {});
-  }
+async function loadStats() {
+  try {
+    // Memanggil API dengan timestamp (?t=...) agar Vercel/Browser tidak menahan cache
+    const res = await fetch(`/api/stats?t=${Date.now()}`);
+    const data = await res.json();
 
-  // Load stats on page start
-  loadStats();
+    // 1. Ambil Total Activations (jika tidak ada, ambil fallback total_links)
+    const totalCount = data.totalActivations ?? data.total_links ?? 0;
+    
+    // 2. Ambil statistik HARI INI berdasarkan tanggal ISO
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayCount = (data.daily && data.daily[todayStr]) ? data.daily[todayStr] : 0;
+
+    // 3. Masukkan ke ID HTML yang sesuai (st-total dan st-today)
+    const elTotal = document.getElementById('st-total');
+    const elToday = document.getElementById('st-today');
+
+    if (elTotal) elTotal.innerText = totalCount;
+    if (elToday) elToday.innerText = todayCount;
+
+  } catch (err) {
+    console.error('Gagal memuat statistik:', err);
+  }
+}
+
+// Jalankan fungsi saat halaman dibuka
+loadStats();
 
   // STEPPER CONTROLLER
   const step = n => {
