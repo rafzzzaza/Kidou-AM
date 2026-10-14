@@ -241,7 +241,7 @@ Proyek ini dikembangkan dan dikelola secara independen oleh **Rafa**. Jika Anda 
 
 <div align="center">
 
-  **Dibuat dengan ❤️ oleh [Rafa](https://github.com/rafzzzaza)**  
+  **Dibuat dengan ❤️ oleh [Rafa dhiyayi haq](https://github.com/rafzzzaza)**  
   LISENSI [MIT](LICENSE) © 2026
 
 </div>
